@@ -26,7 +26,7 @@ const getKeyForRecord = record => {
 };
 
 /**
- * Cut down the number of sameStructure comparisons to only the ones
+ * Cut down the number of keyEQ comparisons to only the ones
  * that don't fail basic equality tests
  * TODO: better name?
  *
@@ -108,7 +108,7 @@ const hasElement = (buckets, elem) => {
 
 // get a string of string keys and string values as a fuzzy hash for
 // bucketing.
-// only use sameStructure within that bucket.
+// only use keyEQ within that bucket.
 
 /**
  * @type {SetMathHelpers}
