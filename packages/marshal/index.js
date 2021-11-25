@@ -43,17 +43,3 @@ export {
   isRecord,
   isCopyArray,
 } from './src/assertPassStyleOf.js';
-export {
-  compareRank,
-  compareAntiRank,
-  isRankSorted,
-  assertRankSorted,
-  sortByRank,
-  FullRankCover,
-  getPassStyleCover,
-  getIndexCover,
-  coveredEntries,
-  unionRankCovers,
-  intersectRankCovers,
-} from './src/rankOrder.js';
-export { makeRankStore, makeRankStoreFactoryKit } from './src/rankStore.js';
