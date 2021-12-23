@@ -7,7 +7,7 @@ import {
 } from '@agoric/swingset-vat/src/vats/network/index.js';
 import { E, Far } from '@agoric/far';
 import { makeStore } from '@agoric/store';
-import { installOnChain as installTreasuryOnChain } from '@agoric/treasury/bundles/install-on-chain.js';
+import { installOnChain as installVaultFactoryOnChain } from '@agoric/run-protocol/bundles/install-on-chain.js';
 import { installOnChain as installPegasusOnChain } from '@agoric/pegasus/bundles/install-on-chain.js';
 
 import { makePluginManager } from '@agoric/swingset-vat/src/vats/plugin-manager.js';
@@ -162,8 +162,8 @@ export function buildRootObject(vatPowers, vatParameters) {
       );
 
       // Install the economy, giving the components access to the name admins we made.
-      const [treasuryInstallResults] = await Promise.all([
-        installTreasuryOnChain({
+      const [vaultFactoryInstallResults] = await Promise.all([
+        installVaultFactoryOnChain({
           agoricNames,
           board,
           centralName: CENTRAL_ISSUER_NAME,
@@ -182,7 +182,7 @@ export function buildRootObject(vatPowers, vatParameters) {
           zoeWPurse: zoeWUnlimitedPurse,
         }),
       ]);
-      return treasuryInstallResults;
+      return vaultFactoryInstallResults;
     }
 
     const demoIssuers = demoIssuerEntries(noFakeCurrencies);
@@ -252,13 +252,15 @@ export function buildRootObject(vatPowers, vatParameters) {
 
     // Now we can bootstrap the economy!
     const bankBootstrapSupply = Nat(BigInt(centralBootstrapSupply.amount));
-    // Ask the treasury for enough RUN to fund both AMM and bank.
+    // Ask the vaultFactory for enough RUN to fund both AMM and bank.
     const bootstrapPaymentValue = bankBootstrapSupply + ammDepositValue;
     // NOTE: no use of the voteCreator. We'll need it to initiate votes on
-    // changing Treasury parameters.
-    const { treasuryCreator, _voteCreator, ammFacets } = await installEconomy(
-      bootstrapPaymentValue,
-    );
+    // changing VaultFactory parameters.
+    const {
+      vaultFactoryCreator,
+      _voteCreator,
+      ammFacets,
+    } = await installEconomy(bootstrapPaymentValue);
 
     const [
       centralIssuer,
@@ -291,7 +293,7 @@ export function buildRootObject(vatPowers, vatParameters) {
       E(vats.distributeFees)
         .buildDistributor(
           E(vats.distributeFees).makeFeeCollector(zoeWUnlimitedPurse, [
-            treasuryCreator,
+            vaultFactoryCreator,
             ammFacets.ammCreatorFacet,
           ]),
           feeCollectorDepositFacet,
@@ -309,7 +311,7 @@ export function buildRootObject(vatPowers, vatParameters) {
 
     /* Prime the bank vat with our bootstrap payment. */
     const centralBootstrapPayment = await E(
-      treasuryCreator,
+      vaultFactoryCreator,
     ).getBootstrapPayment(AmountMath.make(centralBrand, bootstrapPaymentValue));
 
     const [ammBootstrapPayment, bankBootstrapPayment] = await E(
@@ -483,7 +485,7 @@ export function buildRootObject(vatPowers, vatParameters) {
             }),
           );
 
-          return E(treasuryCreator).addVaultType(
+          return E(vaultFactoryCreator).addVaultType(
             record.issuer,
             config.keyword,
             rates,
@@ -777,7 +779,7 @@ export function buildRootObject(vatPowers, vatParameters) {
           ['chainWallet', () => makeChainWallet()],
           ['pegasusConnections', pegasusConnections],
           ['priceAuthorityAdmin', priceAuthorityAdmin],
-          ['treasuryCreator', treasuryCreator],
+          ['vaultFactoryCreator', vaultFactoryCreator],
           ['vattp', () => makeVattpFrom(vats)],
         ];
         await Promise.all(
