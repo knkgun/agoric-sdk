@@ -13,7 +13,7 @@ import {
 export const makeRankStore = (_elementName = 'element', _options = {}) => {
   const backingArray = [];
   let sortedCache;
-  /** @type {RankStore} */
+  // /** @type {RankStore} */
   const rankStore = harden({
     add: passable => {
       assertPassable(passable);
