@@ -14,7 +14,7 @@ test('makeIssuerKit bad allegedName', async t => {
 test('makeIssuerKit bad assetKind', async t => {
   // @ts-ignore Intentional wrong type for testing
   t.throws(() => makeIssuerKit('myTokens', 'somethingWrong'), {
-    message: `"somethingWrong" must match one of ["nat","set"]`,
+    message: `"somethingWrong" - Must match one of ["nat","set"]`,
   });
 });
 
