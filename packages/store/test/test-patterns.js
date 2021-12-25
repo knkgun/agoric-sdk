@@ -3,7 +3,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { test } from '@agoric/swingset-vat/tools/prepare-test-env-ava.js';
 import { makeCopySet } from '../src/keys/copySet.js';
-import { assertMatches, matches, M } from '../src/patterns/patternMatchers.js';
+import { fit, matches, M } from '../src/patterns/patternMatchers.js';
 
 /**
  * @typedef MatchTest
@@ -40,7 +40,7 @@ const matchTests = harden([
       [M.lte('x'), /3 - Must be <= "x"/],
       [M.gte('x'), /3 - Must be >= "x"/],
       [M.and(3, 4), /3 - Must be equivalent to the literal pattern: 4/],
-      [M.or(4, 4), /3 - Must be equivalent to the literal pattern: 4/],
+      [M.or(4, 4), /3 - Must match one of \[4,4\]/],
       [M.or(), /3 - no pattern disjuncts to match: \[\]/],
     ],
   },
@@ -137,12 +137,12 @@ const matchTests = harden([
 test('test simple matches', t => {
   for (const { specimen, yesPatterns, noPatterns } of matchTests) {
     for (const yesPattern of yesPatterns) {
-      t.notThrows(() => assertMatches(specimen, yesPattern), `${yesPattern}`);
+      t.notThrows(() => fit(specimen, yesPattern), `${yesPattern}`);
       t.assert(matches(specimen, yesPattern), `${yesPattern}`);
     }
     for (const [noPattern, msg] of noPatterns) {
       t.throws(
-        () => assertMatches(specimen, noPattern),
+        () => fit(specimen, noPattern),
         { message: msg },
         `${noPattern}`,
       );
