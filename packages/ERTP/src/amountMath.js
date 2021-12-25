@@ -2,6 +2,7 @@
 
 import { assert, details as X } from '@agoric/assert';
 import { passStyleOf, assertRemotable, assertRecord } from '@agoric/marshal';
+import { fit, M } from '@agoric/store';
 
 import './types.js';
 import natMathHelpers from './mathHelpers/natMathHelpers.js';
@@ -17,13 +18,10 @@ const AssetKind = {
   SET: 'set',
 };
 harden(AssetKind);
+const AssetKindGuard = M.or(...Object.values(AssetKind));
 
 /** @type {AssertAssetKind} */
-const assertAssetKind = allegedAK =>
-  assert(
-    Object.values(AssetKind).includes(allegedAK),
-    X`The assetKind ${allegedAK} must be either AssetKind.NAT or AssetKind.SET`,
-  );
+const assertAssetKind = allegedAK => fit(allegedAK, AssetKindGuard);
 harden(assertAssetKind);
 
 /**
